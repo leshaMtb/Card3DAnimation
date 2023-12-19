@@ -16,16 +16,8 @@ class MainViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(imageLiteralResourceName: "MTC-Logo")
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.allowsEdgeAntialiasing = true
         return imageView
-    }()
-
-    private lazy var cardLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Bank Name"
-        label.font = .boldSystemFont(ofSize: 18)
-        label.textColor = .white
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
     }()
 
     override func viewDidLoad() {
@@ -45,6 +37,7 @@ class MainViewController: UIViewController {
                                     height: 180)
 
     }
+    
     private func animateCardByMotion() {
         guard motionManager.isDeviceMotionAvailable else {
             return
