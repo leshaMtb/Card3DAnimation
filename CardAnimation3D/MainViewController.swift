@@ -10,14 +10,13 @@ import CoreMotion
 
 class MainViewController: UIViewController {
 
-    let motionManager = CMMotionManager()
+    private let motionManager = CMMotionManager()
 
-    private lazy var card: UIView = {
-        let card = UIView()
-        card.backgroundColor = .magenta
-        card.layer.cornerRadius = 6
-        card.translatesAutoresizingMaskIntoConstraints = false
-        return card
+    private lazy var cardImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(imageLiteralResourceName: "MTC-Logo")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
     }()
 
     private lazy var cardLabel: UILabel = {
@@ -39,39 +38,31 @@ class MainViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .white
-        view.addSubview(card)
-        card.frame = .init(x: 20,
-                           y: 100,
-                           width: UIScreen.main.bounds.width - 40,
-                           height: 180)
-        card.addSubview(cardLabel)
-        cardLabel.frame = .init(x: 20,
-                                y: 20,
-                                width: 100,
-                                height: 30)
-    }
+        view.addSubview(cardImageView)
+        cardImageView.frame = .init(x: 16,
+                                    y: 100,
+                                    width: UIScreen.main.bounds.width - 32,
+                                    height: 180)
 
+    }
     private func animateCardByMotion() {
         guard motionManager.isDeviceMotionAvailable else {
             return
         }
-        motionManager.deviceMotionUpdateInterval = 0.1
+        motionManager.deviceMotionUpdateInterval = 0.15
         motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { data, error in
             guard let data else {
                 return
             }
-            let xRotation = round(data.rotationRate.x * 10) / 10.0
-            let yRotation = round(data.rotationRate.y * 10) / 10.0
-            guard xRotation > 0.1 || xRotation < -0.1 || xRotation == 0.0,
-                  yRotation > 0.1 || yRotation < -0.1 || yRotation == 0.0 else {
-                return
-            }
-            UIView.animate(withDuration: 0.1) {
+
+            let xGravity = round(data.gravity.x * 10) / 10.0
+            let yGravity = (round(data.gravity.y * 10) / 10.0) + 0.6
+            UIView.animate(withDuration: 0.15) {
                 var transform3D = CATransform3DIdentity
                 transform3D.m34 = -1 / 1500
                 self.view.layer.sublayerTransform = transform3D
-                let angle: CGFloat = .pi / 16
-                self.card.transform3D = CATransform3DRotate(transform3D, angle, xRotation, yRotation, 0)
+                let angle: CGFloat = .pi / 25
+                self.cardImageView.transform3D = CATransform3DRotate(transform3D, angle, -yGravity, -xGravity, 0)
             }
         }
     }
